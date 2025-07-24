@@ -1,5 +1,5 @@
 export const TRANSLATES = {
-  COMMON: "common",
-  HOME: "home",
-  LOGIN: "login",
-};
+  COMMON: 'common',
+  HOME: 'home',
+  LOGIN: 'login'
+}

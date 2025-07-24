@@ -1,27 +1,21 @@
-"use client";
+'use client'
 
-import {
-  Controller,
-  Control,
-  FieldValues,
-  Path,
-  RegisterOptions,
-} from "react-hook-form";
-import { Input, Form } from "antd";
+import { Controller, Control, FieldValues, Path, RegisterOptions } from 'react-hook-form'
+import { Input, Form } from 'antd'
 
 interface FormInputProps<T extends FieldValues> {
-  name: Path<T>;
-  control: Control<T>;
-  label?: string;
-  placeholder?: string;
-  type?: string;
-  disabled?: boolean;
-  prefix?: React.ReactNode;
-  size?: "small" | "middle" | "large";
-  variant?: "filled" | "underlined" | "borderless" | "outlined";
-  password?: boolean;
-  rules?: RegisterOptions<T, Path<T>>;
-  required?: boolean;
+  name: Path<T>
+  control: Control<T>
+  label?: string
+  placeholder?: string
+  type?: string
+  disabled?: boolean
+  prefix?: React.ReactNode
+  size?: 'small' | 'middle' | 'large'
+  variant?: 'filled' | 'underlined' | 'borderless' | 'outlined'
+  password?: boolean
+  rules?: RegisterOptions<T, Path<T>>
+  required?: boolean
 }
 
 export function FormInput<T extends FieldValues>({
@@ -29,14 +23,14 @@ export function FormInput<T extends FieldValues>({
   control,
   label,
   placeholder,
-  type = "text",
+  type = 'text',
   disabled = false,
   prefix,
-  size = "middle",
-  variant = "outlined",
+  size = 'middle',
+  variant = 'outlined',
   password = false,
   rules,
-  required = false,
+  required = false
 }: FormInputProps<T>) {
   return (
     <Controller
@@ -48,13 +42,13 @@ export function FormInput<T extends FieldValues>({
           label={
             required && label ? (
               <span>
-                {label} <span style={{ color: "red" }}>*</span>
+                {label} <span style={{ color: 'red' }}>*</span>
               </span>
             ) : (
               label
             )
           }
-          validateStatus={error ? "error" : ""}
+          validateStatus={error ? 'error' : ''}
           help={error?.message}
         >
           {password ? (
@@ -80,5 +74,5 @@ export function FormInput<T extends FieldValues>({
         </Form.Item>
       )}
     />
-  );
+  )
 }

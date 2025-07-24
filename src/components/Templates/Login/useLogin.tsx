@@ -1,39 +1,39 @@
-"use client";
+'use client'
 
-import { PATHS } from "@/constants/paths";
-import { TRANSLATES } from "@/constants/translates";
-import { useMessage } from "@/hooks/useMessage";
-import { login } from "@/services/auth/login";
-import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { PATHS } from '@/constants/paths'
+import { TRANSLATES } from '@/constants/translates'
+import { useMessage } from '@/hooks/useMessage'
+import { login } from '@/services/auth/login'
+import { useTranslations } from 'next-intl'
+import { useForm } from 'react-hook-form'
+import { useRouter } from 'next/navigation'
 
 type LoginFormValues = {
-  email: string;
-  password: string;
-};
+  email: string
+  password: string
+}
 
 export function useLogin() {
-  const router = useRouter();
-  const t = useTranslations(TRANSLATES.LOGIN);
-  const { success, error } = useMessage();
-  const { handleSubmit, control } = useForm<LoginFormValues>();
+  const router = useRouter()
+  const t = useTranslations(TRANSLATES.LOGIN)
+  const { success, error } = useMessage()
+  const { handleSubmit, control } = useForm<LoginFormValues>()
 
   const onSubmit = handleSubmit(async (data: LoginFormValues) => {
     try {
-      const res = await login(data);
+      const res = await login(data)
       if (res.data) {
         // Lưu token vào localStorage
-        const token = res.data.token;
-        localStorage.setItem("token", token);
-        success(t("success"));
-        router.push(PATHS.HOME);
+        const token = res.data.token
+        localStorage.setItem('token', token)
+        success(t('success'))
+        router.push(PATHS.HOME)
       }
     } catch (e) {
-      error(t("error"));
-      console.error("Login failed:", e);
+      error(t('error'))
+      console.error('Login failed:', e)
     }
-  });
+  })
 
-  return [{ control }, { onSubmit }] as const;
+  return [{ control }, { onSubmit }] as const
 }

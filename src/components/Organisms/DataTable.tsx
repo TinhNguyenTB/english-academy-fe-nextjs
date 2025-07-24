@@ -1,32 +1,32 @@
-"use client";
+'use client'
 
-import { Table } from "antd";
-import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "@/config/axiosInstance";
+import { Table } from 'antd'
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import axios from '@/config/axiosInstance'
 
 interface PageResponse<T> {
-  content: T[];
-  totalElements: number;
+  content: T[]
+  totalElements: number
 }
 
 interface Props<T extends { id: number }> {
-  columns: ColumnsType<T>;
-  endpoint: string;
-  filters?: Record<string, any>;
-  rowActions?: (record: T) => React.ReactNode;
-  showSizeChanger?: boolean;
-  showQuickJumper?: boolean;
+  columns: ColumnsType<T>
+  endpoint: string
+  filters?: Record<string, any>
+  rowActions?: (record: T) => React.ReactNode
+  showSizeChanger?: boolean
+  showQuickJumper?: boolean
   paginationPosition?:
-    | "bottomCenter"
-    | "bottomLeft"
-    | "bottomRight"
-    | "none"
-    | "topCenter"
-    | "topLeft"
-    | "topRight";
-  showTotal?: (total: number, range: [number, number]) => string;
+    | 'bottomCenter'
+    | 'bottomLeft'
+    | 'bottomRight'
+    | 'none'
+    | 'topCenter'
+    | 'topLeft'
+    | 'topRight'
+  showTotal?: (total: number, range: [number, number]) => string
 }
 
 export function DateTable<T extends { id: number }>({
@@ -36,79 +36,68 @@ export function DateTable<T extends { id: number }>({
   rowActions,
   showSizeChanger = false,
   showQuickJumper = false,
-  paginationPosition = "bottomCenter",
-  showTotal,
+  paginationPosition = 'bottomCenter',
+  showTotal
 }: Props<T>) {
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
-    pageSize: 10,
-  });
-  const [sortField, setSortField] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<"ascend" | "descend" | null>(null);
+    pageSize: 10
+  })
+  const [sortField, setSortField] = useState<string | null>(null)
+  const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | null>(null)
 
   const { data, isFetching } = useQuery({
-    queryKey: [
-      endpoint,
-      pagination.current,
-      pagination.pageSize,
-      sortField,
-      sortOrder,
-      filters,
-    ],
+    queryKey: [endpoint, pagination.current, pagination.pageSize, sortField, sortOrder, filters],
     queryFn: async () => {
       const params: Record<string, any> = {
         page: pagination.current! - 1,
         size: pagination.pageSize,
-        ...filters,
-      };
-
-      if (sortField && sortOrder) {
-        params.sortBy = sortField;
-        params.direction = sortOrder === "ascend" ? "asc" : "desc";
+        ...filters
       }
 
-      const res = await axios.get<PageResponse<T>>(endpoint, { params });
-      return res.data;
-    },
-  });
+      if (sortField && sortOrder) {
+        params.sortBy = sortField
+        params.direction = sortOrder === 'ascend' ? 'asc' : 'desc'
+      }
 
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-    _: any,
-    sorter: any
-  ) => {
-    setPagination(pagination);
-    if (sorter?.field) {
-      setSortField(sorter.field);
-      setSortOrder(sorter.order);
+      const res = await axios.get<PageResponse<T>>(endpoint, { params })
+      return res.data
     }
-  };
+  })
+
+  const handleTableChange = (pagination: TablePaginationConfig, _: any, sorter: any) => {
+    setPagination(pagination)
+    if (sorter?.field) {
+      setSortField(sorter.field)
+      setSortOrder(sorter.order)
+    }
+  }
 
   const mergedColumns = [
     ...columns.map((col) => {
-      if ("dataIndex" in col && typeof col.dataIndex === "string") {
+      if ('dataIndex' in col && typeof col.dataIndex === 'string') {
         return {
           ...col,
-          filteredValue: filters[col.dataIndex] || null,
-        };
+          filteredValue: filters[col.dataIndex] || null
+        }
       }
-      return col;
+      return col
     }),
     ...(rowActions
       ? [
           {
-            title: "Actions",
-            key: "actions",
-            render: (_: any, record: T) => rowActions(record),
-          },
+            title: 'Actions',
+            key: 'actions',
+            render: (_: any, record: T) => rowActions(record)
+          }
         ]
-      : []),
-  ];
+      : [])
+  ]
 
   return (
     <Table
-      scroll={{ x: "max-content" }}
-      rowKey="id"
+      scroll={{ x: 'max-content' }}
+      rowKey='id'
       columns={mergedColumns || []}
       dataSource={data?.content || []}
       loading={isFetching}
@@ -118,11 +107,11 @@ export function DateTable<T extends { id: number }>({
         total: data?.totalElements,
         showSizeChanger: showSizeChanger,
         showQuickJumper: showQuickJumper,
-        pageSizeOptions: ["5", "10", "20", "50"],
+        pageSizeOptions: ['5', '10', '20', '50'],
         position: [paginationPosition],
-        showTotal,
+        showTotal
       }}
       onChange={handleTableChange}
     />
-  );
+  )
 }
