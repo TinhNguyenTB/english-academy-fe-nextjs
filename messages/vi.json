@@ -1,0 +1,27 @@
+{
+  "home": {
+    "title": "Trang chủ",
+    "welcomeMessage": "Chào mừng bạn đến với trang chủ của chúng tôi!",
+    "description": "Đây là nơi bạn có thể tìm thấy những thông tin mới nhất và cập nhật quan trọng.",
+    "about": "Về chúng tôi"
+  },
+  "login": {
+    "title": "Đăng nhập",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "submit": "Đăng nhập",
+    "success": "Đăng nhập thành công!",
+    "error": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập."
+  },
+  "common": {
+    "validation": {
+      "required": "{field} là bắt buộc.",
+      "email": "Vui lòng nhập địa chỉ email hợp lệ.",
+      "minLength": "{field} phải có ít nhất {min} ký tự.",
+      "maxLength": "{field} phải có nhiều nhất {max} ký tự."
+    },
+    "btn": {
+      "login": "Đăng nhập"
+    }
+  }
+}

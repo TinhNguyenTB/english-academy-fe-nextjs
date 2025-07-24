@@ -1,0 +1,27 @@
+{
+  "home": {
+    "title": "Home page",
+    "welcomeMessage": "Welcome to our home page!",
+    "description": "This is where you can find the latest information and important updates.",
+    "about": "About us"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign In",
+    "success": "Login successful!",
+    "error": "Login failed. Please check your credentials."
+  },
+  "common": {
+    "validation": {
+      "required": "{field} is required.",
+      "email": "Please enter a valid email address.",
+      "minLength": "{field} must be at least {min} characters long.",
+      "maxLength": "{field} must be at most {max} characters long."
+    },
+    "btn": {
+      "login": "Sign In"
+    }
+  }
+}
