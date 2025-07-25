@@ -13,6 +13,15 @@
     "success": "Login successful!",
     "error": "Login failed. Please check your credentials."
   },
+  "register": {
+  "title": "Register",
+  "name":"Name",
+  "email": "Email",
+  "password": "Password",
+  "submit": "Sign Up",
+  "success": "Registration successful!",
+  "error": "Registration failed. Please check your information."
+  },
   "common": {
     "validation": {
       "required": "{field} is required.",

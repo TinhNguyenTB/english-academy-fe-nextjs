@@ -13,6 +13,15 @@
     "success": "Đăng nhập thành công!",
     "error": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập."
   },
+  "register": {
+  "title": "Đăng ký",
+  "name": "Tên",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "submit": "Đăng ký",
+  "success": "Đăng ký thành công!",
+  "error": "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin của bạn."
+  },
   "common": {
     "validation": {
       "required": "{field} là bắt buộc.",

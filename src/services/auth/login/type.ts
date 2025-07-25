@@ -1,6 +1,6 @@
 import { BaseResponse } from '@/services/types'
 
-export interface LoginFormValues {
+export interface LoginRequest {
   email: string
   password: string
 }

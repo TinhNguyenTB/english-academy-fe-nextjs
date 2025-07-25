@@ -2,14 +2,14 @@
 
 import { FormInput } from '@/components/Atoms/FormInput'
 import { Button, Form } from 'antd'
-import { LockOutlined, MailOutlined } from '@ant-design/icons'
+import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
 import { useTranslations } from 'next-intl'
-import { useLogin } from '@/components/Templates/Login/useLogin'
 import LanguageSwitcher from '@/components/Atoms/LanguageSwitcher'
+import { useRegister } from '@/components/Templates/Register/useRegister'
 
-export function LoginTemplate() {
+export function RegisterTemplate() {
   const t = useTranslations()
-  const [values, handles] = useLogin()
+  const [values, handles] = useRegister()
   const { control } = values
   const { onSubmit } = handles
 
@@ -25,12 +25,23 @@ export function LoginTemplate() {
         <Form layout='vertical' onFinish={onSubmit}>
           <FormInput
             control={control}
-            name='email'
-            label={t('login.email')}
+            name='name'
+            label={t('register.name')}
             required
             size='large'
             rules={{
-              required: t('common.validation.required', { field: t('login.email') }),
+              required: t('common.validation.required', { field: t('register.name') })
+            }}
+            prefix={<UserOutlined />}
+          />
+          <FormInput
+            control={control}
+            name='email'
+            label={t('register.email')}
+            required
+            size='large'
+            rules={{
+              required: t('common.validation.required', { field: t('register.email') }),
               pattern: {
                 value: /^\S+@\S+$/,
                 message: t('common.validation.email')
@@ -41,18 +52,18 @@ export function LoginTemplate() {
           <FormInput
             control={control}
             name='password'
-            label={t('login.password')}
+            label={t('register.password')}
             password
             size='large'
             required
             rules={{
-              required: t('common.validation.required', { field: t('login.password') })
+              required: t('common.validation.required', { field: t('register.password') })
             }}
             prefix={<LockOutlined />}
           />
           <Form.Item>
             <Button type='primary' htmlType='submit' block>
-              {t('login.submit')}
+              {t('register.submit')}
             </Button>
           </Form.Item>
         </Form>

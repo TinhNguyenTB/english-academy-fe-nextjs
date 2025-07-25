@@ -1,7 +1,7 @@
 import axiosInstance from '@/config/axiosInstance'
-import { LoginFormValues, LoginResponse } from '@/services/auth/login/type'
+import { LoginRequest, LoginResponse } from '@/services/auth/login/type'
 
-export const login = async (requestBody: LoginFormValues) => {
+export const login = async (requestBody: LoginRequest) => {
   const { data } = await axiosInstance<LoginResponse>({
     url: '/api/v1/auth/login',
     method: 'POST',
