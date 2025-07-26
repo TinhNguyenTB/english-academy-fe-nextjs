@@ -1,117 +1,174 @@
 'use client'
 
-import { Table } from 'antd'
-import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
-import { useState } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import { Table, Input, Form, Space, Button, TableProps } from 'antd'
 import { useQuery } from '@tanstack/react-query'
-import axios from '@/config/axiosInstance'
+import { useForm, Controller } from 'react-hook-form'
+import { SearchOutlined, ClearOutlined } from '@ant-design/icons'
+import { useDebounce } from '@/hooks/useDebounce'
+import { QueryParams, PageResponse } from '@/services/types'
+import { ColumnType, FilterValue, SorterResult } from 'antd/es/table/interface'
 
-interface PageResponse<T> {
-  content: T[]
-  totalElements: number
+export interface CustomColumnType<T> extends ColumnType<T> {
+  searchable?: boolean
 }
 
-interface Props<T extends { id: number }> {
-  columns: ColumnsType<T>
-  endpoint: string
-  filters?: Record<string, any>
-  rowActions?: (record: T) => React.ReactNode
-  showSizeChanger?: boolean
-  showQuickJumper?: boolean
-  paginationPosition?:
-    | 'bottomCenter'
-    | 'bottomLeft'
-    | 'bottomRight'
-    | 'none'
-    | 'topCenter'
-    | 'topLeft'
-    | 'topRight'
-  showTotal?: (total: number, range: [number, number]) => string
+export interface DataTableProps<T> extends TableProps<T> {
+  fetchDataFn: (params: QueryParams) => Promise<PageResponse<T>>
+  columns: CustomColumnType<T>[]
+  initialQueryParams?: QueryParams
+  queryKey: string | string[]
+  rowKey?: keyof T
+  showResetAll?: boolean
 }
 
-export function DateTable<T extends { id: number }>({
-  columns,
-  endpoint,
-  filters = {},
-  rowActions,
-  showSizeChanger = false,
-  showQuickJumper = false,
-  paginationPosition = 'bottomCenter',
-  showTotal
-}: Props<T>) {
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 10
-  })
-  const [sortField, setSortField] = useState<string | null>(null)
-  const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | null>(null)
+const DataTable = <T extends object>({
+  fetchDataFn,
+  columns: initialColumns,
+  initialQueryParams = { page: 0, size: 10 },
+  queryKey,
+  rowKey = 'id' as keyof T,
+  showResetAll = false,
+  ...tableProps
+}: DataTableProps<T>) => {
+  const [queryParams, setQueryParams] = useState<QueryParams>(initialQueryParams)
 
-  const { data, isFetching } = useQuery({
-    queryKey: [endpoint, pagination.current, pagination.pageSize, sortField, sortOrder, filters],
-    queryFn: async () => {
-      const params: Record<string, any> = {
-        page: pagination.current! - 1,
-        size: pagination.pageSize,
-        ...filters
-      }
+  const { page, size, sort, ...filters } = queryParams
 
-      if (sortField && sortOrder) {
-        params.sortBy = sortField
-        params.direction = sortOrder === 'ascend' ? 'asc' : 'desc'
-      }
-
-      const res = await axios.get<PageResponse<T>>(endpoint, { params })
-      return res.data
-    }
+  const { control, reset, watch } = useForm<Record<string, string | undefined>>({
+    defaultValues: filters as Record<string, string | undefined>
   })
 
-  const handleTableChange = (pagination: TablePaginationConfig, _: any, sorter: any) => {
-    setPagination(pagination)
-    if (sorter?.field) {
-      setSortField(sorter.field)
-      setSortOrder(sorter.order)
+  const watchedFilters = watch()
+  const debouncedFilters = useDebounce(watchedFilters, 500)
+
+  useEffect(() => {
+    setQueryParams((prev) => ({
+      ...prev,
+      ...debouncedFilters,
+      page: 0
+    }))
+  }, [debouncedFilters])
+
+  const { data, isLoading, isFetching } = useQuery<PageResponse<T>>({
+    queryKey: [queryKey, queryParams],
+    queryFn: () => fetchDataFn(queryParams)
+  })
+
+  const handleTableChange = (
+    pagination: { current?: number; pageSize?: number },
+    _tableFilters: Record<string, FilterValue | null>,
+    sorter: SorterResult<T> | SorterResult<T>[]
+  ) => {
+    let newSort: string | undefined = undefined
+    if (!Array.isArray(sorter) && sorter.field && sorter.order) {
+      if (typeof sorter.field === 'string') {
+        newSort = `${sorter.field},${sorter.order === 'ascend' ? 'asc' : 'desc'}`
+      } else if (Array.isArray(sorter.field)) {
+        // trường hợp dataIndex là mảng, lấy phần tử cuối cùng
+        newSort = `${String(sorter.field.slice(-1)[0])},${sorter.order === 'ascend' ? 'asc' : 'desc'}`
+      }
     }
+
+    setQueryParams((prev) => ({
+      ...prev,
+      page: pagination.current ? pagination.current - 1 : 0,
+      size: pagination.pageSize || 10,
+      sort: newSort
+    }))
   }
 
-  const mergedColumns = [
-    ...columns.map((col) => {
-      if ('dataIndex' in col && typeof col.dataIndex === 'string') {
+  const handleResetFilters = useCallback(() => {
+    reset({})
+    setQueryParams(initialQueryParams)
+  }, [reset, initialQueryParams])
+
+  const getColumnSearchProps = useCallback(
+    (dataIndex: ColumnType<T>['dataIndex']): ColumnType<T> => {
+      const dataIndexString = Array.isArray(dataIndex) ? dataIndex.join('.') : String(dataIndex)
+
+      return {
+        filterDropdown: ({ setSelectedKeys }) => (
+          <div style={{ padding: 8 }}>
+            <Form>
+              <Controller
+                name={dataIndexString}
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder={`Search ${dataIndexString}`}
+                    style={{ marginBottom: 8, display: 'block' }}
+                  />
+                )}
+              />
+            </Form>
+            <Space>
+              <Button
+                onClick={() => {
+                  setSelectedKeys([])
+                  reset({ ...watch(), [dataIndexString]: undefined })
+                }}
+                size='small'
+                style={{ width: 90 }}
+                icon={<ClearOutlined />}
+              >
+                Reset
+              </Button>
+            </Space>
+          </div>
+        ),
+        filterIcon: (filtered: boolean) => (
+          <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+        ),
+        onFilter: () => true
+      }
+    },
+    [control, reset, watch]
+  )
+
+  const columns = useMemo(() => {
+    return initialColumns.map((col) => {
+      if (col.searchable && col.dataIndex !== undefined && typeof col.dataIndex !== 'symbol') {
         return {
           ...col,
-          filteredValue: filters[col.dataIndex] || null
+          ...getColumnSearchProps(col.dataIndex)
         }
       }
       return col
-    }),
-    ...(rowActions
-      ? [
-          {
-            title: 'Actions',
-            key: 'actions',
-            render: (_: any, record: T) => rowActions(record)
-          }
-        ]
-      : [])
-  ]
+    })
+  }, [initialColumns, getColumnSearchProps])
+
+  const tableDataSource = data?.data.content || []
+  const totalElements = data?.data.totalElements || 0
+  const currentPage = (data?.data.number || 0) + 1
 
   return (
-    <Table
-      scroll={{ x: 'max-content' }}
-      rowKey='id'
-      columns={mergedColumns || []}
-      dataSource={data?.content || []}
-      loading={isFetching}
-      pagination={{
-        current: pagination.current,
-        pageSize: pagination.pageSize,
-        total: data?.totalElements,
-        showSizeChanger: showSizeChanger,
-        showQuickJumper: showQuickJumper,
-        pageSizeOptions: ['5', '10', '20', '50'],
-        position: [paginationPosition],
-        showTotal
-      }}
-      onChange={handleTableChange}
-    />
+    <>
+      {showResetAll && (
+        <Button onClick={handleResetFilters} style={{ marginBottom: 16 }}>
+          Reset All Filters & Sort
+        </Button>
+      )}
+      <Table<T>
+        columns={columns}
+        dataSource={tableDataSource}
+        loading={isLoading || isFetching}
+        pagination={{
+          current: currentPage,
+          pageSize: size,
+          total: totalElements,
+          showSizeChanger: totalElements > 10,
+          pageSizeOptions: ['10', '20', '50', '100'],
+          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
+        }}
+        onChange={handleTableChange}
+        rowKey={rowKey as string}
+        scroll={{ x: 'max-content' }}
+        {...tableProps}
+      />
+    </>
   )
 }
+
+export default DataTable

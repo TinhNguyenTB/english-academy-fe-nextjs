@@ -6,6 +6,7 @@ import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { getMessages } from 'next-intl/server'
 import { MessageProvider } from '@/hoc/MessageProvider'
 import QueryProvider from '@/hoc/QueryProvider'
+import 'antd/dist/reset.css'
 
 export default async function RootLayout({
   children,

@@ -27,7 +27,7 @@ export function useLogin() {
         const token = res.data.token
         localStorage.setItem('token', token)
         success(t('success'))
-        router.push(PATHS.HOME)
+        router.replace(PATHS.HOME)
       }
     } catch (e) {
       error(t('error'))
