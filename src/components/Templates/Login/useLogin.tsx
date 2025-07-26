@@ -2,7 +2,7 @@
 
 import { PATHS } from '@/constants/paths'
 import { TRANSLATES } from '@/constants/translates'
-import { useMessage } from '@/hooks/useMessage'
+import { useGlobalMessage } from '@/hooks/useGlobalMessage'
 import { login } from '@/services/auth/login'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
@@ -16,7 +16,7 @@ type LoginFormValues = {
 export function useLogin() {
   const router = useRouter()
   const t = useTranslations(TRANSLATES.LOGIN)
-  const { success, error } = useMessage()
+  const { success, error } = useGlobalMessage()
   const { handleSubmit, control } = useForm<LoginFormValues>()
 
   const onSubmit = handleSubmit(async (data: LoginFormValues) => {

@@ -2,7 +2,7 @@
 
 import { PATHS } from '@/constants/paths'
 import { TRANSLATES } from '@/constants/translates'
-import { useMessage } from '@/hooks/useMessage'
+import { useGlobalMessage } from '@/hooks/useGlobalMessage'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
@@ -17,7 +17,7 @@ type RegisterFormValues = {
 export function useRegister() {
   const router = useRouter()
   const t = useTranslations(TRANSLATES.REGISTER)
-  const { success, error } = useMessage()
+  const { success, error } = useGlobalMessage()
   const { handleSubmit, control } = useForm<RegisterFormValues>()
 
   const onSubmit = handleSubmit(async (data: RegisterFormValues) => {
