@@ -33,7 +33,10 @@
       "maxLength": "{field} phải có nhiều nhất {max} ký tự."
     },
     "btn": {
-      "login": "Đăng nhập"
-    }
+      "delete": "Xóa",
+      "clear":"Clear",
+      "search":"Tìm kiếm"
+    },
+    "reset":"Xóa tất cả bộ lọc và sắp xếp"
   }
 }

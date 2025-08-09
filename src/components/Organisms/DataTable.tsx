@@ -12,6 +12,8 @@ import {
   SorterResult,
   TablePaginationConfig
 } from 'antd/es/table/interface'
+import { TRANSLATES } from '@/constants/translates'
+import { useTranslations } from 'next-intl'
 
 export interface CustomColumnType<T> extends ColumnType<T> {
   searchable?: boolean
@@ -39,6 +41,7 @@ const DataTable = <T extends object>({
   onQueryParamsChange,
   ...tableProps
 }: DataTableProps<T>) => {
+  const t = useTranslations(TRANSLATES.COMMON)
   const [queryParams, setQueryParams] = useState<QueryParams>(initialQueryParams)
 
   const { page, size, sort, ...filters } = queryParams
@@ -105,7 +108,7 @@ const DataTable = <T extends object>({
                 render={({ field }) => (
                   <Input
                     {...field}
-                    placeholder={`Tìm kiếm ${dataIndexString}`}
+                    placeholder={`${t('btn.search')} ${dataIndexString}`}
                     style={{ marginBottom: 8, display: 'block' }}
                   />
                 )}
@@ -121,7 +124,7 @@ const DataTable = <T extends object>({
                 style={{ width: 90 }}
                 icon={<ClearOutlined />}
               >
-                Xóa
+                {t('btn.clear')}
               </Button>
             </Space>
           </div>
@@ -155,7 +158,7 @@ const DataTable = <T extends object>({
     <>
       {showResetAll && (
         <Button onClick={handleResetFilters} style={{ marginBottom: 16 }}>
-          Xóa tất cả bộ lọc & sắp xếp
+          {t('reset')}
         </Button>
       )}
       <Table<T>

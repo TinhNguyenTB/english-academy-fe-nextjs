@@ -33,7 +33,10 @@
       "maxLength": "{field} must be at most {max} characters long."
     },
     "btn": {
-      "login": "Sign In"
-    }
+       "delete": "Delete",
+      "clear":"Clear",
+      "search":"Search"
+    },
+    "reset":"Clear all filters and sorting"
   }
 }
