@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import LanguageSwitcher from '@/components/Atoms/LanguageSwitcher'
 import { useRegister } from '@/components/Templates/Register/useRegister'
 
-export function RegisterTemplate() {
+export default function RegisterTemplate() {
   const t = useTranslations()
   const [values, handles] = useRegister()
   const { control } = values
@@ -58,6 +58,20 @@ export function RegisterTemplate() {
             required
             rules={{
               required: t('common.validation.required', { field: t('register.password') })
+            }}
+            prefix={<LockOutlined />}
+          />
+          <FormInput
+            control={control}
+            name='confirmPassword'
+            label={t('register.confirmPassword')}
+            password
+            size='large'
+            required
+            rules={{
+              required: t('common.validation.required', { field: t('register.confirmPassword') }),
+              validate: (value: string, formValues: any) =>
+                value === formValues.password || t('register.passwordMismatch')
             }}
             prefix={<LockOutlined />}
           />

@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import { useLogin } from '@/components/Templates/Login/useLogin'
 import LanguageSwitcher from '@/components/Atoms/LanguageSwitcher'
 
-export function LoginTemplate() {
+export default function LoginTemplate() {
   const t = useTranslations()
   const [values, handles] = useLogin()
   const { control } = values

@@ -17,7 +17,10 @@
   "title": "Đăng ký",
   "name": "Tên",
   "email": "Email",
+  "role":"Vai trò",
   "password": "Mật khẩu",
+  "confirmPassword": "Xác nhận mật khẩu",
+  "passwordMismatch": "Mật khẩu không khớp",
   "submit": "Đăng ký",
   "success": "Đăng ký thành công!",
   "error": "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin của bạn."

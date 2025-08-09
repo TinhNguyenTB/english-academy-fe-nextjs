@@ -1,3 +1,4 @@
+import { PATHS } from '@/constants/paths'
 import axios from 'axios'
 
 const axiosInstance = axios.create({
@@ -24,6 +25,17 @@ axiosInstance.interceptors.response.use(
     return response
   },
   (error) => {
+    if (typeof window !== 'undefined') {
+      switch (error.response?.status) {
+        case 403:
+          window.location.href = PATHS.FORBIDDEN
+          break
+        case 401:
+          window.location.href = PATHS.LOGIN
+          break
+      }
+    }
+
     return Promise.reject(error)
   }
 )

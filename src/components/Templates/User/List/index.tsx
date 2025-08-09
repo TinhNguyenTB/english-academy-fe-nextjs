@@ -2,22 +2,32 @@
 
 import DataTable from '@/components/Organisms/DataTable'
 import { useListUsers } from '@/components/Templates/User/List/useListUsers'
-import { fetchListUser } from '@/services/user'
-import { User } from '@/services/user/type'
+import ModalUser from '@/components/Templates/User/ModalUser'
+import { User } from '@/services/user/list/type'
 
 export default function ListUsers() {
-  const [values] = useListUsers()
-  const { columns } = values
+  const [values, handles] = useListUsers()
+  const { columns, openModal, selectedUser, data, isLoading } = values
+  const { handleCloseModal, refetch, setQueryParams } = handles
+
   return (
     <div style={{ padding: '20px' }}>
       <h1 style={{ marginBottom: '20px' }}>User Management</h1>
       <DataTable<User>
-        queryKey='listUsers'
-        fetchDataFn={fetchListUser}
         columns={columns}
-        initialQueryParams={{ page: 0, size: 10 }}
+        externalData={data || { data: { content: [], totalElements: 0, number: 0 } }}
+        isLoading={isLoading}
         rowKey='id'
         size='middle'
+        showResetAll={true}
+        onQueryParamsChange={setQueryParams}
+      />
+      <ModalUser
+        isEdit={selectedUser !== null}
+        open={openModal}
+        onCancel={handleCloseModal}
+        user={selectedUser}
+        refetch={refetch}
       />
     </div>
   )

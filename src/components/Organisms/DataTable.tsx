@@ -2,33 +2,41 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Table, Input, Form, Space, Button, TableProps } from 'antd'
-import { useQuery } from '@tanstack/react-query'
 import { useForm, Controller } from 'react-hook-form'
 import { SearchOutlined, ClearOutlined } from '@ant-design/icons'
 import { useDebounce } from '@/hooks/useDebounce'
 import { QueryParams, PageResponse } from '@/services/types'
-import { ColumnType, FilterValue, SorterResult } from 'antd/es/table/interface'
+import {
+  ColumnType,
+  FilterValue,
+  SorterResult,
+  TablePaginationConfig
+} from 'antd/es/table/interface'
 
 export interface CustomColumnType<T> extends ColumnType<T> {
   searchable?: boolean
 }
 
 export interface DataTableProps<T> extends TableProps<T> {
-  fetchDataFn: (params: QueryParams) => Promise<PageResponse<T>>
   columns: CustomColumnType<T>[]
   initialQueryParams?: QueryParams
-  queryKey: string | string[]
   rowKey?: keyof T
   showResetAll?: boolean
+  pagination?: TablePaginationConfig
+  externalData: PageResponse<T>
+  isLoading?: boolean
+  onQueryParamsChange?: (params: QueryParams) => void
 }
 
 const DataTable = <T extends object>({
-  fetchDataFn,
   columns: initialColumns,
   initialQueryParams = { page: 0, size: 10 },
-  queryKey,
   rowKey = 'id' as keyof T,
   showResetAll = false,
+  pagination,
+  externalData,
+  isLoading = false,
+  onQueryParamsChange,
   ...tableProps
 }: DataTableProps<T>) => {
   const [queryParams, setQueryParams] = useState<QueryParams>(initialQueryParams)
@@ -43,17 +51,14 @@ const DataTable = <T extends object>({
   const debouncedFilters = useDebounce(watchedFilters, 500)
 
   useEffect(() => {
-    setQueryParams((prev) => ({
-      ...prev,
+    const newQueryParams = {
+      ...queryParams,
       ...debouncedFilters,
       page: 0
-    }))
-  }, [debouncedFilters])
-
-  const { data, isLoading, isFetching } = useQuery<PageResponse<T>>({
-    queryKey: [queryKey, queryParams],
-    queryFn: () => fetchDataFn(queryParams)
-  })
+    }
+    setQueryParams(newQueryParams)
+    onQueryParamsChange?.(newQueryParams) // Gọi callback khi queryParams thay đổi
+  }, [debouncedFilters, onQueryParamsChange])
 
   const handleTableChange = (
     pagination: { current?: number; pageSize?: number },
@@ -65,23 +70,26 @@ const DataTable = <T extends object>({
       if (typeof sorter.field === 'string') {
         newSort = `${sorter.field},${sorter.order === 'ascend' ? 'asc' : 'desc'}`
       } else if (Array.isArray(sorter.field)) {
-        // trường hợp dataIndex là mảng, lấy phần tử cuối cùng
         newSort = `${String(sorter.field.slice(-1)[0])},${sorter.order === 'ascend' ? 'asc' : 'desc'}`
       }
     }
 
-    setQueryParams((prev) => ({
-      ...prev,
+    const newQueryParams = {
+      ...queryParams,
       page: pagination.current ? pagination.current - 1 : 0,
       size: pagination.pageSize || 10,
       sort: newSort
-    }))
+    }
+
+    setQueryParams(newQueryParams)
+    onQueryParamsChange?.(newQueryParams) // Gọi callback khi queryParams thay đổi
   }
 
   const handleResetFilters = useCallback(() => {
     reset({})
     setQueryParams(initialQueryParams)
-  }, [reset, initialQueryParams])
+    onQueryParamsChange?.(initialQueryParams) // Gọi callback khi reset
+  }, [reset, initialQueryParams, onQueryParamsChange])
 
   const getColumnSearchProps = useCallback(
     (dataIndex: ColumnType<T>['dataIndex']): ColumnType<T> => {
@@ -97,7 +105,7 @@ const DataTable = <T extends object>({
                 render={({ field }) => (
                   <Input
                     {...field}
-                    placeholder={`Search ${dataIndexString}`}
+                    placeholder={`Tìm kiếm ${dataIndexString}`}
                     style={{ marginBottom: 8, display: 'block' }}
                   />
                 )}
@@ -113,7 +121,7 @@ const DataTable = <T extends object>({
                 style={{ width: 90 }}
                 icon={<ClearOutlined />}
               >
-                Reset
+                Xóa
               </Button>
             </Space>
           </div>
@@ -139,28 +147,29 @@ const DataTable = <T extends object>({
     })
   }, [initialColumns, getColumnSearchProps])
 
-  const tableDataSource = data?.data.content || []
-  const totalElements = data?.data.totalElements || 0
-  const currentPage = (data?.data.number || 0) + 1
+  const tableDataSource = externalData?.data.content || []
+  const totalElements = externalData?.data.totalElements || 0
+  const currentPage = (externalData?.data.number || 0) + 1
 
   return (
     <>
       {showResetAll && (
         <Button onClick={handleResetFilters} style={{ marginBottom: 16 }}>
-          Reset All Filters & Sort
+          Xóa tất cả bộ lọc & sắp xếp
         </Button>
       )}
       <Table<T>
         columns={columns}
         dataSource={tableDataSource}
-        loading={isLoading || isFetching}
+        loading={isLoading}
         pagination={{
           current: currentPage,
           pageSize: size,
           total: totalElements,
           showSizeChanger: totalElements > 10,
           pageSizeOptions: ['10', '20', '50', '100'],
-          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
+          showTotal: (total, range) => `${range[0]}-${range[1]}  of ${total} items`,
+          position: ['bottomCenter']
         }}
         onChange={handleTableChange}
         rowKey={rowKey as string}

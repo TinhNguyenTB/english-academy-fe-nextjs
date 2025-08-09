@@ -16,7 +16,7 @@ type LoginFormValues = {
 export function useLogin() {
   const router = useRouter()
   const t = useTranslations(TRANSLATES.LOGIN)
-  const { success, error } = useGlobalMessage()
+  const { toastError, toastSuccess } = useGlobalMessage()
   const { handleSubmit, control } = useForm<LoginFormValues>()
 
   const onSubmit = handleSubmit(async (data: LoginFormValues) => {
@@ -26,11 +26,11 @@ export function useLogin() {
         // Lưu token vào localStorage
         const token = res.data.token
         localStorage.setItem('token', token)
-        success(t('success'))
+        toastSuccess(t('success'))
         router.replace(PATHS.HOME)
       }
     } catch (e) {
-      error(t('error'))
+      toastError(t('error'))
       console.error('Login failed:', e)
     }
   })

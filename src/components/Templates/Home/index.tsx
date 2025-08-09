@@ -2,7 +2,7 @@ import LanguageSwitcher from '@/components/Atoms/LanguageSwitcher'
 import { TRANSLATES } from '@/constants/translates'
 import { useTranslations } from 'next-intl'
 
-export function HomeTemplate() {
+export default function HomeTemplate() {
   const t = useTranslations(TRANSLATES.HOME)
   return (
     <main>

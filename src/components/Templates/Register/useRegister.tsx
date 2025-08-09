@@ -11,24 +11,25 @@ import { register } from '@/services/auth/register'
 type RegisterFormValues = {
   email: string
   password: string
+  confirmPassword: string
   name: string
 }
 
 export function useRegister() {
   const router = useRouter()
   const t = useTranslations(TRANSLATES.REGISTER)
-  const { success, error } = useGlobalMessage()
+  const { toastSuccess, toastError } = useGlobalMessage()
   const { handleSubmit, control } = useForm<RegisterFormValues>()
 
   const onSubmit = handleSubmit(async (data: RegisterFormValues) => {
     try {
       const res = await register(data)
       if (res.data) {
-        success(t('success'))
+        toastSuccess(t('success'))
         router.push(PATHS.LOGIN)
       }
     } catch (e) {
-      error(t('error'))
+      toastError(t('error'))
       console.error('Register failed:', e)
     }
   })

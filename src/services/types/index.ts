@@ -12,20 +12,20 @@ export interface BaseResponse<T> {
 }
 
 export interface PageResponse<T> {
-  code: number
+  code?: number
   message?: string
   data: {
     content: T[]
-    empty: boolean
-    first: boolean
-    last: boolean
+    empty?: boolean
+    first?: boolean
+    last?: boolean
     number: number
-    numberOfElements: number
-    pageable: Pageable
-    size: number
-    sort: Sort
+    numberOfElements?: number
+    pageable?: Pageable
+    size?: number
+    sort?: Sort
     totalElements: number
-    totalPages: number
+    totalPages?: number
   }
 }
 
