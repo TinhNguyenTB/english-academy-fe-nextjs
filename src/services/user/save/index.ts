@@ -17,3 +17,12 @@ export const updateUser = async ({
   })
   return data
 }
+
+export const createUser = async ({ body }: { body: SaveUser }): Promise<BaseResponse<User>> => {
+  const { data } = await axiosInstance<BaseResponse<User>>({
+    method: 'POST',
+    url: `/api/v1/users`,
+    data: body
+  })
+  return data
+}

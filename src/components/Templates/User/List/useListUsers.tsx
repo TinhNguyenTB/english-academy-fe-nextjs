@@ -26,6 +26,11 @@ export function useListUsers() {
     setOpenModal(true)
   }
 
+  const handleCreate = () => {
+    setSelectedUser(null)
+    setOpenModal(true)
+  }
+
   const handleCloseModal = () => {
     setSelectedUser(null)
     setOpenModal(false)
@@ -68,6 +73,6 @@ export function useListUsers() {
 
   return [
     { columns, selectedUser, openModal, data, isLoading },
-    { handleCloseModal, refetch, setQueryParams }
+    { handleCloseModal, refetch, setQueryParams, handleCreate }
   ] as const
 }

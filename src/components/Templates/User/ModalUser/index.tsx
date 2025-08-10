@@ -18,8 +18,8 @@ type ModalUserProps = {
 
 export default function ModalUser({ open, isEdit, onCancel, refetch, user }: ModalUserProps) {
   const t = useTranslations()
-  const [values, handles] = useModalUser(onCancel, refetch)
-  const { control, roleOptions, isPending } = values
+  const [values, handles] = useModalUser(onCancel, refetch, isEdit)
+  const { control, roleOptions, loadingCreate, loadingUpdate } = values
   const { reset, onSubmit } = handles
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function ModalUser({ open, isEdit, onCancel, refetch, user }: Mod
       title={isEdit ? 'Edit user' : 'Add a user'}
       onOk={onSubmit}
       onCancel={onCancel}
-      loading={isPending}
+      loading={isEdit ? loadingUpdate : loadingCreate}
     >
       <Form layout='vertical'>
         <FormInput
