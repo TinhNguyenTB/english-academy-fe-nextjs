@@ -1,12 +1,8 @@
 'use client'
 
 import React from 'react'
-import { UserOutlined, HomeOutlined } from '@ant-design/icons'
 import { Layout, Menu } from 'antd'
-import { ItemType, MenuItemType } from 'antd/es/menu/interface'
-import { PATHS } from '@/constants/paths'
-import { Link } from '@/i18n/navigation'
-import LanguageSwitcher from '@/components/Atoms/LanguageSwitcher'
+import { menuItems } from '@/constants/menuItems'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -21,23 +17,6 @@ const siderStyle: React.CSSProperties = {
   scrollbarGutter: 'stable'
 }
 
-const items: ItemType<MenuItemType>[] = [
-  {
-    key: 'language',
-    label: <LanguageSwitcher />
-  },
-  {
-    key: PATHS.HOME,
-    icon: <HomeOutlined />,
-    label: <Link href={PATHS.HOME}>Home</Link>
-  },
-  {
-    key: PATHS.USER,
-    icon: <UserOutlined />,
-    label: <Link href={PATHS.USER}>Users</Link>
-  }
-]
-
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <Layout>
@@ -45,7 +24,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Menu
           theme='light'
           mode='inline'
-          items={items}
+          items={menuItems}
           style={{ height: '100%', minWidth: 'fit-content' }}
         />
       </Sider>

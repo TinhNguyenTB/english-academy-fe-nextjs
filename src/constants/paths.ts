@@ -3,5 +3,6 @@ export const PATHS = {
   LOGIN: '/login',
   REGISTER: '/register',
   USER: '/users',
-  FORBIDDEN: '/403'
+  FORBIDDEN: '/403',
+  TOPIC: '/topics'
 }
